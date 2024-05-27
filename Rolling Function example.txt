@@ -1,8 +1,9 @@
 consider ar = [1,2,3,4,5,6,7]
 we have rolling function with window size 2
-First two value of output will be NaN because window size
+First (window size - 1) value of output will be NaN because window size - 1
 Then we will take 2 element find their average (1+2)/2
 Then we will slide window by 1 so their average(2+3)/2
 and so on.
 
-answer = [NaN,NaN,(1+2)/2,(2+3)/2,(3+4)/2...]
+answer = [NaN,(1+2)/2,(2+3)/2,(3+4)/2...]
+More descriptive example: https://chatgpt.com/share/60824123-4387-47bc-9fa5-f2d95a52d6ad
