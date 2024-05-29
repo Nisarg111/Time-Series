@@ -1,0 +1,143 @@
+Forecasting in ARIMA 
+ARIMA (AutoRegressive Integrated Moving Average) is a popular statistical method used for time series forecasting. It combines three components: autoregression (AR), differencing (I), and moving average (MA). Here's a breakdown of ARIMA and an example to illustrate its use:
+ARIMA is not good for seasonal data.
+
+### ARIMA Model Components
+
+1. **Autoregressive (AR) part**: This involves regressing the variable on its own lagged (past) values. The order of the AR part is denoted by \( p \).
+
+2. **Integrated (I) part**: This involves differencing the data to make it stationary. The order of differencing is denoted by \( d \).
+
+3. **Moving Average (MA) part**: This involves modeling the error term as a linear combination of error terms occurring at different times in the past. The order of the MA part is denoted by \( q \).
+
+### ARIMA Model Notation
+
+ARIMA models are generally denoted as ARIMA(p, d, q), where:
+- \( p \) is the number of lag observations included in the model (lag order). Identified by PACF plot
+- \( d \) is the number of times that the raw observations are differenced. 
+- \( q \) is the size of the moving average window. Identified by ACF plot
+
+How to detemine p and q:
+1. Plot ACF and PACF.
+2. From the plot if any value at any given point is higher or lower than the threshold than that value can be selected.
+3. For example, if the graph that has been plotted has 30 points, but only at point 1, 5, 10, 15 are the points where it touches or goes beyond the threshold then any one of the following can be used we can try each one to 
+see which is the best.
+4. Applied for both plots.
+
+Dickey Fuller test:
+
+1. If data is not stationary than ARIMA can not be used. Dickey fuller test is used for this.
+2. If p value is <=0.05 then data is stationary.
+3. If data is not stationary we have to make it using differencing.
+
+Differencing working:
+
+1. Subtract current value from the previous value.
+2. First value will NaN.
+
+### Steps to Build an ARIMA Model
+
+1. **Visualize the Time Series**: Plot the data to understand its structure and behavior.
+
+2. **Make the Series Stationary**: Ensure the series is stationary by using differencing if needed. Check for stationarity using methods like the Augmented Dickey-Fuller test.
+
+3. **Identify the Order of the Model**: Use ACF (AutoCorrelation Function) and PACF (Partial AutoCorrelation Function) plots to determine the values of \( p \) and \( q \).
+
+4. **Fit the ARIMA Model**: Use statistical software or programming libraries (e.g., Python's statsmodels) to fit the ARIMA model to the time series data.
+
+5. **Validate the Model**: Check the residuals to ensure they resemble white noise. Adjust model parameters if necessary.
+
+6. **Forecast**: Use the model to make forecasts and visualize the predictions.
+
+### Example: ARIMA Model on Simulated Data
+
+Let's go through an example step-by-step using Python code:
+
+```python
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from statsmodels.tsa.arima.model import ARIMA
+from statsmodels.tsa.stattools import adfuller, acf, pacf
+
+# Generate sample data: a non-stationary time series
+np.random.seed(42)
+data = np.cumsum(np.random.randn(100)) + 20  # Random walk data
+
+# Convert to pandas Series
+time_series = pd.Series(data)
+
+# Plot the time series
+plt.figure(figsize=(10, 6))
+plt.plot(time_series)
+plt.title('Time Series Data')
+plt.show()
+
+# Step 2: Make the series stationary
+# Differencing the data
+diff_series = time_series.diff().dropna()
+
+# Perform ADF test
+adf_result = adfuller(diff_series)
+print(f'ADF Statistic: {adf_result[0]}')
+print(f'p-value: {adf_result[1]}')
+
+# Plot the differenced series
+plt.figure(figsize=(10, 6))
+plt.plot(diff_series)
+plt.title('Differenced Time Series Data')
+plt.show()
+
+# Step 3: Identify p and q using ACF and PACF plots
+acf_values = acf(diff_series, nlags=20)
+pacf_values = pacf(diff_series, nlags=20)
+
+plt.figure(figsize=(12, 6))
+
+plt.subplot(121)
+plt.stem(acf_values)
+plt.title('ACF Plot')
+
+plt.subplot(122)
+plt.stem(pacf_values)
+plt.title('PACF Plot')
+
+plt.show()
+
+# Based on plots, assume p=1 and q=1
+
+# Step 4: Fit the ARIMA model
+model = ARIMA(time_series, order=(1, 1, 1))
+fitted_model = model.fit()
+print(fitted_model.summary())
+
+# Step 5: Validate the model
+residuals = fitted_model.resid
+
+plt.figure(figsize=(10, 6))
+plt.plot(residuals)
+plt.title('Residuals')
+plt.show()
+
+# Step 6: Forecast
+forecast_steps = 10
+forecast = fitted_model.forecast(steps=forecast_steps)
+
+plt.figure(figsize=(10, 6))
+plt.plot(time_series, label='Original')
+plt.plot(np.arange(len(time_series), len(time_series) + forecast_steps), forecast, label='Forecast')
+plt.legend()
+plt.show()
+```
+
+### Explanation of the Example
+
+1. **Generate Sample Data**: Create a time series data using a random walk, which is non-stationary.
+2. **Plot the Data**: Visualize the data to see its non-stationary behavior.
+3. **Make Series Stationary**: Differencing the series and performing the Augmented Dickey-Fuller (ADF) test to check stationarity.
+4. **Identify Model Order**: Use ACF and PACF plots to identify potential values for \( p \) and \( q \).
+5. **Fit ARIMA Model**: Use the ARIMA model with the identified order and fit it to the data.
+6. **Validate Model**: Check residuals to ensure they are white noise.
+7. **Forecast**: Use the model to make future predictions and plot the forecasted values.
+
+This example covers the essential steps in building an ARIMA model, making it suitable for various real-world time series forecasting tasks.
