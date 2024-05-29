@@ -35,6 +35,11 @@ Differencing working:
 1. Subtract current value from the previous value.
 2. First value will NaN.
 
+Model and model fitting
+
+1. We first create the model using Arima(data_set,order(p,d,q)
+2. The fit() method is called on the ARIMA model with the training data. This method estimates the parameters of the model that best fit the training data.
+
 ### Steps to Build an ARIMA Model
 
 1. **Visualize the Time Series**: Plot the data to understand its structure and behavior.
